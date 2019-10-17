@@ -27,6 +27,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         if (!isRecording) {
             do {
                 try audioSession?.setActive(true, options: [])
+                audioRecorder = initAudioRecorder()
                 audioRecorder?.record()
                 isRecording = true
             } catch {
@@ -34,6 +35,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
             }
         } else {
             audioRecorder?.stop()
+            isRecording = false;
         }
 
         recordButton.setTitle(isRecording ? "Recording" : "Press to Record", for: .normal)
@@ -46,7 +48,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
+        recordButton.setTitle(isRecording ? "Recording" : "Press to Record", for: .normal)
     }
 
     func initAudioSession() -> AVAudioSession? {
@@ -70,7 +72,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
     
     func initAudioRecorder() -> AVAudioRecorder? {
         let audioFilename = getFileURL()
-        print("\(audioFilename)")
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 12000,
@@ -93,8 +94,23 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         return paths[0]
     }
     func getFileURL() -> URL {
-        let path = getDocumentsDirectory().appendingPathComponent("recording.m4a")
+        let path = getDocumentsDirectory().appendingPathComponent(getTodayString() + ".m4a")
         return path as URL
+    }
+
+    func getTodayString() -> String{
+        let date = Date()
+        let calender = Calendar.current
+        let components = calender.dateComponents([.year,.month,.day,.hour,.minute,.second], from: date)
+        let year = components.year
+        let month = components.month
+        let day = components.day
+        let hour = components.hour
+        let minute = components.minute
+        let second = components.second
+        let today_string = String(year!) + "-" + String(month!) + "-" + String(day!) + " " + String(hour!)  + ":" + String(minute!) + ":" +  String(second!)
+
+        return today_string
     }
 }
 
