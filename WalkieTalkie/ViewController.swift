@@ -10,7 +10,10 @@ import UIKit
 import AVFoundation
 
 
-class ViewController: UIViewController, AVAudioRecorderDelegate {
+class ViewController: UIViewController, AVAudioRecorderDelegate, UITableViewDelegate, UITableViewDataSource, AVAudioPlayerDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return recordings.count
+    }
 
     lazy var audioRecorder: AVAudioRecorder? = {
         return initAudioRecorder()
@@ -20,22 +23,28 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         return initAudioSession()
     }()
 
-    var isRecording = false
+    lazy var audioPlayer: AVAudioPlayer? = {
+        return initAudioPlayer(withFileURL: nil)
+    }()
 
+    var isRecording = false
+    var recordings: [AudioRecording] = []
+    @IBOutlet weak var recordingsTableView: UITableView!
     @IBOutlet weak var recordButton: UIButton!
     @IBAction func recordButtonTapped(_ sender: Any) {
         if (!isRecording) {
             do {
                 try audioSession?.setActive(true, options: [])
                 audioRecorder = initAudioRecorder()
-                audioRecorder?.record()
+                recordAudio(withAudioRecorder: audioRecorder)
                 isRecording = true
             } catch {
                 isRecording = false;
             }
         } else {
             audioRecorder?.stop()
-            isRecording = false;
+            isRecording = false
+            recordingsTableView.reloadData()
         }
 
         recordButton.setTitle(isRecording ? "Recording" : "Press to Record", for: .normal)
@@ -47,9 +56,12 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         recordButton.setTitle(isRecording ? "Recording" : "Press to Record", for: .normal)
+        recordingsTableView.delegate = self
+        recordingsTableView.dataSource = self
     }
+
+    // MARK: Initialization
 
     func initAudioSession() -> AVAudioSession? {
         let audioSession = AVAudioSession.sharedInstance()
@@ -82,13 +94,44 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         do {
             let audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
             audioRecorder.delegate = self
-            audioRecorder.record()
             return audioRecorder
         } catch {
         }
         return nil
     }
     
+    func initAudioPlayer(withFileURL fileURL: URL?) -> AVAudioPlayer? {
+        guard let fileURL = fileURL else {
+            return nil
+        }
+        var error: NSError?
+        do {
+            let audioPlayer = try AVAudioPlayer(contentsOf: fileURL as URL)
+            audioPlayer.delegate = self
+            audioPlayer.prepareToPlay()
+            audioPlayer.volume = 10.0
+            return audioPlayer
+        } catch let error1 as NSError {
+            error = error1
+            audioPlayer = nil
+        }
+
+        if let err = error {
+            print("AVAudioPlayer error: \(err.localizedDescription)")
+        }
+
+        return nil
+    }
+
+    // MARK: Recording Methods
+
+    func recordAudio(withAudioRecorder audioRecorder: AVAudioRecorder?) {
+        audioRecorder?.record()
+        recordings.append(AudioRecording(audioRecorder?.url.absoluteString, filePath: audioRecorder?.url))
+    }
+
+    // MARK: General Helper Methods
+
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
@@ -111,6 +154,31 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
         let today_string = String(year!) + "-" + String(month!) + "-" + String(day!) + " " + String(hour!)  + ":" + String(minute!) + ":" +  String(second!)
 
         return today_string
+    }
+
+    // MARK: TableView Delegate Methods
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "cellReuseIdentifier") as? UITableViewCell ?? UITableViewCell()
+
+        // set the text from the data model
+        if let recording = self.recordings[indexPath.row] as? AudioRecording  {
+            cell.textLabel?.text = recording.title
+        }
+
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let recording = self.recordings[indexPath.row] as? AudioRecording,
+            let filePath = (recordings[indexPath.row] as? AudioRecording)?.filePath
+            /*let audioPlayer = try AVAudioPlayer(contentsOf: filePath) initAudioPlayer(withFileURL: filePath) */ {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: filePath)
+                audioPlayer?.prepareToPlay()
+                audioPlayer?.play()
+            } catch {
+            }
+        }
     }
 }
 

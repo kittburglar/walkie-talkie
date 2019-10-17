@@ -12,6 +12,7 @@
 		F8A6C03523580F9600D48B01 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A6C03323580F9600D48B01 /* Main.storyboard */; };
 		F8A6C03723580F9800D48B01 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8A6C03623580F9800D48B01 /* Assets.xcassets */; };
 		F8A6C03A23580F9800D48B01 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8A6C03823580F9800D48B01 /* LaunchScreen.storyboard */; };
+		F8A6C042235826B500D48B01 /* AudioRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A6C041235826B500D48B01 /* AudioRecording.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		F8A6C03623580F9800D48B01 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F8A6C03923580F9800D48B01 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F8A6C03B23580F9800D48B01 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F8A6C041235826B500D48B01 /* AudioRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecording.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				F8A6C03623580F9800D48B01 /* Assets.xcassets */,
 				F8A6C03823580F9800D48B01 /* LaunchScreen.storyboard */,
 				F8A6C03B23580F9800D48B01 /* Info.plist */,
+				F8A6C041235826B500D48B01 /* AudioRecording.swift */,
 			);
 			path = WalkieTalkie;
 			sourceTree = "<group>";
@@ -135,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8A6C042235826B500D48B01 /* AudioRecording.swift in Sources */,
 				F8A6C03223580F9600D48B01 /* ViewController.swift in Sources */,
 				F8A6C03023580F9600D48B01 /* AppDelegate.swift in Sources */,
 			);

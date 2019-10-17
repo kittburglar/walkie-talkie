@@ -48,6 +48,7 @@
                     </view>
                     <connections>
                         <outlet property="recordButton" destination="LXG-cC-JEE" id="8AY-Ic-Pij"/>
+                        <outlet property="recordingsTableView" destination="nRY-G6-VU3" id="9Vh-ve-fot"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
