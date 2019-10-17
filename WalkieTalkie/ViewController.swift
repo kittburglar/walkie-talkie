@@ -12,19 +12,47 @@ import AVFoundation
 
 class ViewController: UIViewController, AVAudioRecorderDelegate {
 
+    lazy var audioRecorder: AVAudioRecorder? = {
+        return initAudioRecorder()
+    }()
+
+    lazy var audioSession: AVAudioSession? = {
+        return initAudioSession()
+    }()
+
+    var isRecording = false
+
+    @IBOutlet weak var recordButton: UIButton!
+    @IBAction func recordButtonTapped(_ sender: Any) {
+        if (!isRecording) {
+            do {
+                try audioSession?.setActive(true, options: [])
+                audioRecorder?.record()
+                isRecording = true
+            } catch {
+                isRecording = false;
+            }
+        } else {
+            audioRecorder?.stop()
+        }
+
+        recordButton.setTitle(isRecording ? "Recording" : "Press to Record", for: .normal)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        setupAudioSession()
-        setupAudioFilePath()
     }
 
-    func setupAudioSession() {
+    func initAudioSession() -> AVAudioSession? {
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setCategory(.playAndRecord)
-            try audioSession.setActive(true, options: [])
             
             audioSession.requestRecordPermission { (approved) in
                 if (approved) {
@@ -33,14 +61,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
                     print("you can't record.")
                 }
             }
-            
-            
+            return audioSession
         } catch {
             print("Setting category to AVAudioSessionCategoryPlayAndRecord failed.")
         }
+        return nil
     }
     
-    func setupAudioFilePath() {
+    func initAudioRecorder() -> AVAudioRecorder? {
         let audioFilename = getFileURL()
         print("\(audioFilename)")
         let settings = [
@@ -54,8 +82,10 @@ class ViewController: UIViewController, AVAudioRecorderDelegate {
             let audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
             audioRecorder.delegate = self
             audioRecorder.record()
+            return audioRecorder
         } catch {
         }
+        return nil
     }
     
     func getDocumentsDirectory() -> URL {
